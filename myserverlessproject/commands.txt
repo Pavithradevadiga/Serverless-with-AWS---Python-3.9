@@ -1,0 +1,23 @@
+To setup a serverless:
+Command1 : serverless config credentials --provider aws --key <Access key ID> --secret <Secret access key> --profile <profilename>
+
+To Create a project:
+Command2 : serverless create --template aws-python --path myserverlessproject
+
+Instructions:
+i)A folder with myserverlessproject name is created.
+ii)Open serverless.yml file inside the folder and edit runtime from nodejs to python3.9 and profile to your profile name.
+iii)Save the serverless.yml file.
+
+(Note below commands are for windows OS)
+Enter the command:
+cd myserverlessproject
+and navigate inside the myserverlessproject project
+Enter the command:
+dir
+this would list all the files,make sure it contains handler.py and serverless.yml files
+
+Deploy the serverless using the command:
+sls Deploy
+
+You can navigate to your AWS Account -> Lambda functions and find your deployed lambda function
