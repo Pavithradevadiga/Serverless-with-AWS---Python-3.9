@@ -1,0 +1,1 @@
+With reference to very good youtube tutorial to learn 'The Serverless framework with AWS' by Sam from Complete Coding. The Folders in this repo contains the code written in python for all the playlists.
