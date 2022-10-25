@@ -1,0 +1,7 @@
+Steps:
+
+Step1: Create getUser.py function
+Step2: Create API_Reponses.py function
+Step3: Import API_Reponses in getUser
+Step4: Edit serverless.yml to include getUser.py function with http GET event as a trigger.
+Step5: Run sls deploy command
