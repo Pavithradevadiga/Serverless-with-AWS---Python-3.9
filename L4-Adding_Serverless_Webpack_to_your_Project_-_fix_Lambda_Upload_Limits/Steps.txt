@@ -1,0 +1,18 @@
+Here we use 'serverless-python-requirements' plugin instead of 'webpack' for python to exclude the folders not required in lambda.
+
+Step1: Include 'serverless-python-requirements' plugin in the plugin list
+
+Step2: Add 'pythonRequirements' in custom section of serverless.yml file
+
+Step3: In the package section exclude the folders with '!'
+
+Step4: Save the yml file.
+
+Step5: Install the  required plugin with command 'npm install --save serverless-python-requirements'
+
+Step6: Run sls deploy
+
+
+
+
+ 
