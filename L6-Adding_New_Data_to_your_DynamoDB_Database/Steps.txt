@@ -1,0 +1,7 @@
+Step1:create common and endpoints folder inside lambdas folder
+
+Step2: Push API_Responses to common folder  and getUser to endpoints folder
+
+Step3: Create Dynamo.py inside common and getPlayerScore.py inside endpoints folder,import Dynamo.py inside getPlayerScore.py file
+
+Step4: Edit serverless.yml to include getPlayerScore function with environment variable,player-points db and an IAM role
