@@ -1,0 +1,9 @@
+Step1: Create 'createPlayerScore.py' function
+
+Step2: Update 'Dynamo.py' function to include write function
+
+Step3: Update Serverless to include 'createPlayerScore' function
+
+Step4: Run 'sls deploy' command
+
+

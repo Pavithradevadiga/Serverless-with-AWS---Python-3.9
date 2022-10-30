@@ -1,13 +1,14 @@
 import json
-from lambdas import API_Responses as response
+from lambdas.common import API_Responses as response
 from lambdas.common import Dynamo 
+import os
 
 data = {
         "1234" : {'name': 'Anna Jones','age': 25, 'job': 'journalist'},
         "7893" : {'name': 'Chris Smith','age': 52, 'job': 'teacher'},
         "5132" : {'name': 'Tom Hague','age': 23, 'job': 'plasterer'}
     }
-tableName = process.env.tableName
+tableName= os.environ.get('tableName')
 
 def handler(event, context):
     print("event",event)
