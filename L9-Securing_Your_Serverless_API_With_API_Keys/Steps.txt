@@ -1,0 +1,3 @@
+Step1 : Edit serverless.yml under provider section to add apiGateway --> apiKeys
+Step2: For getUser function add 'private' property
+Step3: Add free and paid usage plans under API section
