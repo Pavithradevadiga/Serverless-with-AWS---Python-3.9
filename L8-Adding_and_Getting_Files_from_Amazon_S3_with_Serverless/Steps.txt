@@ -1,0 +1,7 @@
+Step1 : create a python file createFile.py
+Step2 : create a python file S3.py
+Step3 : Edit the serverless.yml file
+Step4 : Run 'sls deploy'
+Step5 : create a python file getFile.py
+Step6 : Edit the serverless.yml file
+Step6 : Run 'sls deploy'
