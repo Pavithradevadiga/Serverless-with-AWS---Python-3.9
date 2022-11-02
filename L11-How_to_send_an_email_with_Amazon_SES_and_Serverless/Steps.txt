@@ -1,0 +1,3 @@
+Step1 : Create sendEmail.py function inside  lambdas/endpoints folder
+
+Step2 : Edit serverless.yml file to include the function and provide iam permissions for ses
