@@ -1,0 +1,219 @@
+# Welcome to Serverless!
+#
+# This file is the main config file for your service.
+# It's very minimal at this point and uses default values.
+# You can always add more config options for more control.
+# We've included some commented out config examples here.
+# Just uncomment any of them to get that config option.
+#
+# For full config options, check the docs:
+#    docs.serverless.com
+#
+# Happy Coding!
+
+service: myserverlessproject
+# app and org for use with dashboard.serverless.com
+#app: your-app-name
+#org: your-org-name
+
+# You can pin your service to only deploy with a specific Serverless version
+# Check out our docs for more details
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: python3.9
+  profile: himikos
+  environment: 
+    tableName: ${self:custom.tableName}
+    bucketName: ${self:custom.bucketName}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+        - s3:*
+        - ses:*
+      Resource: '*'  
+  apiGateway:    
+    apiKeys:
+      - free:
+        - myFreeApiKey
+      - paid:
+        - myPaidApiKey     
+    usagePlan:
+      - free:
+          quota:
+            limit: 1000
+            period: MONTH
+          throttle:
+            rateLimit: 5
+            burstLimit: 20
+      - paid:
+          quota:
+            limit: 10000
+            period: MONTH
+          throttle:
+            rateLimit: 50
+            burstLimit: 200
+
+
+
+plugins:
+  - serverless-s3-sync
+  - serverless-python-requirements
+  
+
+custom:
+  tableName: player-points
+  bucketName: myserverlessprojectuploadbucket-99199
+  s3Sync:
+    - bucketName: ${self:custom.bucketName}
+      localDir: UploadData 
+  pythonRequirements:
+    PythonBin: python3
+    dockerizePip: non-linux
+
+package:
+  individually: True
+  patterns:
+  - "**/**"
+  - "!node_modules/**"
+  - "!UploadData/**"
+  - "!package-lock.json"
+  - "!serverless.yml"  
+
+
+# you can overwrite defaults here
+#  stage: dev
+#  region: us-east-1
+
+# you can add statements to the Lambda function's IAM Role here
+#  iam:
+#    role:
+#      statements:
+#        - Effect: "Allow"
+#          Action:
+#            - "s3:ListBucket"
+#          Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ] ]  }
+#        - Effect: "Allow"
+#          Action:
+#            - "s3:PutObject"
+#          Resource:
+#            Fn::Join:
+#              - ""
+#              - - "arn:aws:s3:::"
+#                - "Ref" : "ServerlessDeploymentBucket"
+#                - "/*"
+
+# you can define service wide environment variables here
+#  environment:
+#    variable1: value1
+
+# you can add packaging information here
+#package:
+#  patterns:
+#    - '!exclude-me.py'
+#    - '!exclude-me-dir/**'
+#    - include-me.py
+#    - include-me-dir/**
+
+functions:
+  getUser:
+    handler: lambdas/endpoints/getUser.handler
+    events:
+      - http:
+          path: get-user/{ID}
+          method: GET
+          cors: true
+          private: true
+  getPlayerScore:
+    handler: lambdas/endpoints/getPlayerScore.handler
+    events:
+      - http:
+          path: get-player-score/{ID}
+          method: GET
+          cors: true 
+  createPlayerScore:
+    handler : lambdas/endpoints/createPlayerScore.handler
+    events:
+      - http:
+          path: create-player-score/{ID}
+          method : POST
+          cors: true 
+  createFile:
+    handler : lambdas/endpoints/createFile.handler
+    events:
+      - http:
+          path: create-file/{fileName}
+          method : POST
+          cors: true
+  getFile:
+    handler : lambdas/endpoints/getFile.handler
+    events:
+      - http:
+          path: get-file/{fileName}
+          method : GET
+          cors: true
+  proxy:
+    handler : lambdas/endpoints/proxy.handler
+    events:
+      - http:
+          path: chuck-norris/{proxy+}
+          method: ANY
+          integration: http-proxy
+          request:
+            uri: https://random-word-api.herokuapp.com/{proxy}
+            parameters:
+              paths: 
+                proxy: true
+  sendEmail:
+    handler : lambdas/endpoints/sendEmail.handler
+    events:
+      - http:
+          path: send-email
+          method : POST
+          cors: true
+  updatePlayerScore:
+    handler: lambdas/endpoints/updatePlayerScore.handler
+    events:
+      - http:
+          path: update-player-score/{ID}
+          method: PUT
+          cors: true  
+  getGameScore:
+    handler: lambdas/endpoints/getGameScore.handler
+    events:
+      - http:
+          path: get-game-score/{game}
+          method: GET
+          cors: true                            
+
+
+resources:
+  Resources:
+    DemoBucketUpload:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.bucketName} 
+    MyDynamoDbTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.tableName}
+        AttributeDefinitions:
+          - AttributeName: ID
+            AttributeType: S
+          - AttributeName: game
+            AttributeType: S  
+        KeySchema:
+          - AttributeName: ID
+            KeyType: HASH    
+        BillingMode: PAY_PER_REQUEST  
+
+        GlobalSecondaryIndexes:
+          - IndexName: game-index
+            KeySchema: 
+              - AttributeName: game
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+                       
