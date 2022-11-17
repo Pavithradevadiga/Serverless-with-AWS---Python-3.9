@@ -1,0 +1,178 @@
+# Welcome to Serverless!
+#
+# This file is the main config file for your service.
+# It's very minimal at this point and uses default values.
+# You can always add more config options for more control.
+# We've included some commented out config examples here.
+# Just uncomment any of them to get that config option.
+#
+# For full config options, check the docs:
+#    docs.serverless.com
+#
+# Happy Coding!
+
+service: myserverlessproject
+# app and org for use with dashboard.serverless.com
+#app: your-app-name
+#org: your-org-name
+
+# You can pin your service to only deploy with a specific Serverless version
+# Check out our docs for more details
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: python3.9
+  profile: himikos
+  region: us-east-1
+  stage: dev
+  environment: 
+    tableName: ${self:custom.tableName}
+    bucketName: ${self:custom.bucketName}
+    imageUploadBucket: ${self:custom.imageUploadBucket}
+    region: ${self:provider.region}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+        - s3:*
+        - ses:*
+      Resource: '*'  
+
+
+
+plugins:
+  - serverless-python-requirements
+  
+
+custom:
+  tableName: player-points
+  bucketName: myserverlessprojectuploadbucket-99199
+  imageUploadBucket: my-image-upload-bucket-demo-pwpw
+  pythonRequirements:
+    PythonBin: python3
+    dockerizePip: non-linux
+
+package:
+  individually: True
+  patterns:
+  - "**/**"
+  - "!node_modules/**"
+  - "!UploadData/**"
+  - "!package-lock.json"
+  - "!serverless.yml"     
+
+functions:
+  getUser:
+    handler: lambdas/endpoints/getUser.handler
+    events:
+      - http:
+          path: get-user/{ID}
+          method: GET
+          cors: true
+          private: true
+  getPlayerScore:
+    handler: lambdas/endpoints/getPlayerScore.handler
+    events:
+      - http:
+          path: get-player-score/{ID}
+          method: GET
+          cors: true 
+  createPlayerScore:
+    handler : lambdas/endpoints/createPlayerScore.handler
+    events:
+      - http:
+          path: create-player-score/{ID}
+          method : POST
+          cors: true 
+  createFile:
+    handler : lambdas/endpoints/createFile.handler
+    events:
+      - http:
+          path: create-file/{fileName}
+          method : POST
+          cors: true
+  getFile:
+    handler : lambdas/endpoints/getFile.handler
+    events:
+      - http:
+          path: get-file/{fileName}
+          method : GET
+          cors: true
+  proxy:
+    handler : lambdas/endpoints/proxy.handler
+    events:
+      - http:
+          path: chuck-norris/{proxy+}
+          method: ANY
+          integration: http-proxy
+          request:
+            uri: https://random-word-api.herokuapp.com/{proxy}
+            parameters:
+              paths: 
+                proxy: true
+  sendEmail:
+    handler : lambdas/endpoints/sendEmail.handler
+    events:
+      - http:
+          path: send-email
+          method : POST
+          cors: true
+  updatePlayerScore:
+    handler: lambdas/endpoints/updatePlayerScore.handler
+    events:
+      - http:
+          path: update-player-score/{ID}
+          method: PUT
+          cors: true  
+  getGameScore:
+    handler: lambdas/endpoints/getGameScore.handler
+    events:
+      - http:
+          path: get-game-score/{game}
+          method: GET
+          cors: true
+  imageUpload:
+    handler: lambdas/endpoints/imageUpload.handler
+    events:
+      - http:
+          path: image-upload
+          method: POST
+          cors: true        
+      
+
+           
+resources:
+  Resources:
+    DemoBucketUpload:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.bucketName} 
+    ImageUploadBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.imageUploadBucket}
+        AccessControl: PublicRead    
+    MyDynamoDbTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.tableName}
+        AttributeDefinitions:
+          - AttributeName: ID
+            AttributeType: S
+          - AttributeName: game
+            AttributeType: S  
+        KeySchema:
+          - AttributeName: ID
+            KeyType: HASH    
+        BillingMode: PAY_PER_REQUEST  
+
+        GlobalSecondaryIndexes:
+          - IndexName: game-index
+            KeySchema: 
+              - AttributeName: game
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+            
+                       
